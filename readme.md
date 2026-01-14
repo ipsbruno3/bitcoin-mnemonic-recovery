@@ -267,14 +267,12 @@ For GPU 1
 ## 📦 Fast install (copy & paste)
 ```bash
 sudo apt install git
-git clone https://github.com/ipsbruno3/bitcoin_cracking_final/
-cd bitcoin_cracking_final
-sudo apt update
-sudo apt install -y nvidia-driver-550 ocl-icd-libopencl1 clinfo
+git clone https://github.com/ipsbruno3/bitcoin-mnemonic-recover/
+cd bitcoin-mnemonic-recover
 python3 -m venv venv
 source venv/bin/activate
 pip install --upgrade pip
-python -m pip install -U numpy pyopencl python-dotenv mnemonic rich
+python -m pip install -U numpy pyopencl python-dotenv mnemonic rich requests bech32 
 python main.py
 ```
 
