@@ -31,8 +31,8 @@ _In very specific cases, its possible we can recover up to 6 words missing the 1
 On this GitHub, you’ll find some of the most optimized codebases for seed searches, including highly parallelizable software implementations and open-source hardware/ASIC designs used across the recovery industry.
 
 
+<img width="2314" height="1011" alt="image" src="https://github.com/user-attachments/assets/622ecd8b-e7dc-4345-b422-7de5feab231f" />
 
-<img width="2318" height="1036" alt="image" src="https://github.com/user-attachments/assets/a3a5c085-954d-424f-ac02-0050a8862437" />
 
 Thank you at all
 
