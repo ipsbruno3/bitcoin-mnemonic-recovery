@@ -1,0 +1,9 @@
+.env
+kernel/cache/*
+!.gitkeep
+__pycache__/
+ui/__pycache__
+*/__pycache__/
+*.pyc   
+logs.txt
+addresses.txt

@@ -1,0 +1,9 @@
+numpy
+pyopencl
+python-dotenv
+mnemonic
+rich
+bech32
+requests
+rbloom
+embit
