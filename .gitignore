@@ -7,3 +7,4 @@ ui/__pycache__
 *.pyc   
 logs.txt
 addresses.txt
+kernel.py
