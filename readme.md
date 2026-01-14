@@ -68,99 +68,60 @@ This project performs **GPU‑accelerated mnemonic recovery** (BIP‑39 and Elec
 
 ---
 
-## Internet  Services
 
-``
-This code connects to the internet to coordinate and retrieve recovery logs, allows you to remove or download telegram.py and cloudflare.py if you need a bus offline and secure locally, without access to external services
-``
+## ⭐ Highlights
 
-**Telegram Support:**
+- **Highly competitive PBKDF2 engine** capable of **tens of millions of executions per second** on modern GPUs. Purpose-built for **Bitcoin BIP-39 mnemonic recovery / brute-force workflows**, targeting higher throughput than established tools such as **John the Ripper** and **Hashcat** in comparable scenarios.
 
+- **Performance-focused cryptographic pipeline optimizations**
+  - Massive pipeline depth in the critical path
+  - Aggressive loop unrolling across cryptographic primitives
+  - Custom algorithmic improvements (e.g., optimized **MAJ reuse/recomputation in SHA-512**)
+  - Fine-grained register rotation/renaming to reduce register pressure and instruction count, minimizing the need to manipulate the full SHA state **(a,b,c,d,e,f,g,h)** and focusing updates on the most relevant registers per round
+
+- **Fast address verification: Bloom prefilter + structured lookup**
+  - Runs a Bloom filter inside the OpenCL hot path, enabling **millions of addresses to be filtered in parallel** without degrading kernel throughput
+  - Uses binary-tree lookup after the “inner bloom” pass, reducing final verification cost from **O(n)** to **O(log n)**
+
+- **Remote state persistence (3 layers)**
+  - **Sequential search:** remote checkpointing via `reports.py` for reliable resume after interruption (used in large stride deployments, e.g., trillion-step strides per rig segmented into thousands of parts for multi-quadrillion search spaces)
+  - **RANDOM search:** compact Bloom dedup layer (≈ **1–10 billion** entries) to reduce long-term repetition and random-walk noise
+  - **Partial seed constraints:** supports prefix hints like `?b` (e.g., `"word word word ?b word ..."`) to reduce the search space, with an expected throughput penalty in highly non-sequential layouts due to reduced checksum pruning
+
+- **Optimized ECC: wNAF + Jacobian coordinates**
+  - Python precomputes base tables/points on the host and uploads ready-to-use data to OpenCL kernels
+  - Recommended wNAF windows: **2 to 6 bits**, depending on GPU architecture
+
+- **Telegram notifications**
+  - Optional notifications for benchmarks, progress, and hit/results for real-time monitoring
 <img width="1563" height="762" alt="image" src="https://github.com/user-attachments/assets/6909f83a-f3ac-4771-974f-245e088aa03c" />
 
-You have the ```telegram.py``` file which allows you to send benchmark logs and hit results (seeds found) via Telegram. This facilitates notification of new finds and granular control of the operation; simply use the functions in the main file ```main.py```
 
-## Vast.AI Containers
+- **Bech32 tag64 acceleration**
+  - Custom **tag64** representation converts Bech32 addresses into compact **64-bit tags**, enabling faster membership checks by avoiding full Bech32 reconstruction in every trial
 
-**Vast.ai** has hundreds of high-end GPUs available for cheap rent; for around $100 you can recover your keys for **up to 4 missing seeds in a few hours**. If you wish, create an NVIDIA CUDA template with the following entrypoint in the settings:
+- **BIP-39 ↔ Electrum mode switch**
+  - Supports standard **BIP-39/BIP-84** as well as **Electrum** mode
+  - Electrum mode performs a **checksum validation step before PBKDF2**, reducing the search space by **4096×**
 
-This will allow the instance to run permanently searching for your lost keys.
+- **OpenCL throughput + scalability**
+  - OpenCL-first architecture focused on maximum throughput and efficient scaling on high-end rigs (e.g., multi-GPU deployments)
+  - Actively developed; contributions are welcome
 
-````
+- **Low-level optimization strategy (pointers, vectors, macros)**
+  - Extensive `#define` usage to push configuration decisions to compile time (fewer runtime branches / fewer instructions in the hot path)
+  - Strategic use of vector types like `ulong4` to leverage SIMD and reduce assignment overhead
+  - Heavy pointer/reference passing to minimize copies and memory traffic
+  - Preference for **ulong-based BIG-INT style representations** over byte-by-byte `uchar` operations in critical paths
 
-#!/usr/bin/env bash
-set -euo pipefail
+- **Native multi-GPU integration**
+  - Automatically detects and enumerates all GPUs
+  - Assigns an independent stride per GPU and runs separate highly-parallel kernels per device (no duplicated work)
 
-
-REPO="${REPO:-bitcoin_cracking_final}"
-URL="https://github.com/ipsbruno3/${REPO}.git"
-mkdir -p /workspace
-cd /workspace
-python3 -m pip install --no-cache-dir -U pip >/dev/null 2>&1 || true
-python3 -m pip install --no-cache-dir numpy pyopencl python-dotenv mnemonic rich rbloom requests bech32 >/dev/null
-command -v supervisord >/dev/null 2>&1 || python3 -m pip install --no-cache-dir supervisor >/dev/null
-if [ -d ".git" ]; then
-  git pull --rebase --autostash || true
-else
-  rm -rf ./* 2>/dev/null || true
-  git clone --depth 1 "$URL" .
-fi
-cat > /workspace/addresses.txt <<'EOF'
-address
-address
-address
-address
-address
-address
-address
-address
-address
-address
-EOF
-cat > /workspace/.env <<EOF
-SLOT_API_URL=https://gpu.cloudfralelink.me
-GPU_THREADS=10_000_000
-RANDOM=1
-CLOUDFLARE_TOKEN=BRUNO
-EOF
-
-cat > /workspace/supervisord.conf <<'EOF'
-[supervisord]
-nodaemon=true
-
-[program:app]
-command=/usr/bin/python3 -u /workspace/main.py
-directory=/workspace
-autorestart=true
-startsecs=2
-stopasgroup=true
-killasgroup=true
-stdout_logfile=/workspace/app.log
-stderr_logfile=/workspace/app.err
-EOF
-
-exec supervisord -c /workspace/supervisord.conf
-````
-
-# Dashboards UI/UX
-
-In the ````cloudflare.py```` file, you have the requests used to send data to the server. This server receives the hashrate and stores benchmark results. If you wish to configure it, this allows you to create a dashboard with logs and real-time results of your search for private keys.
+- **Rich UI Console**
+- <img width="502" height="665" alt="image" src="https://github.com/user-attachments/assets/f66b4292-1752-49fc-881e-30d3a55868cc" />
 
 
-<img width="1885" height="1035" alt="image" src="https://github.com/user-attachments/assets/1e941637-cdb8-4418-982b-895e9dc667f6" />
-
-_The dashboard code is not available in this repository. If you want it, send me an email and I can make it available._
-
-
-It removes ```cloudflare.py``` and ```telegram.py``` if you want to run the code locally without internet access.
-
-We recommend running it on a ```12xRTX NVIDIA 5090``` rig locally if there are many funds involved, for your own security; in this configuration, 5 words can be recovered for up to 3 years.
-
----
-
-### Rich UI Console
-
-<img width="502" height="665" alt="image" src="https://github.com/user-attachments/assets/f66b4292-1752-49fc-881e-30d3a55868cc" />
 
 ---
 
@@ -174,25 +135,11 @@ We recommend running it on a ```12xRTX NVIDIA 5090``` rig locally if there are m
 
 ```bash
 sudo apt update
-sudo apt install -y nvidia-driver-550 ocl-icd-libopencl1 clinfo
-
 python3 -m venv venv
 source venv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
 ```
-
-**requirements.txt**
-```
-pyopencl
-mnemonic
-bech32
-python-dotenv
-numpy
-rich
-```
-
----
 
 
 
@@ -216,6 +163,12 @@ In `.env`, set:
 RANDOM=1
 ```
 This makes the loop pick random blocks of the search space instead of a sequential sweep.
+
+
+## Important
+
+We recommend running the search locally on a dedicated 12× NVIDIA RTX 5090 rig when large amounts of funds are at stake, to minimize risk and keep all sensitive material offline. In this configuration, recovering up to 5 missing words can be feasible within a ~3-year search window (depending on constraints and mode). For a fully air-gapped/offline workflow, disable telegram.py and report.py to prevent any outbound communication.
+
 
 
 ## 📝 I have a partial word in seed
