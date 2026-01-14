@@ -15,13 +15,24 @@ We provide assisted wallet seed and password recovery for users who have lost ac
 
 Our key differentiator is **non-custodial support**: at no point do **we ask for your seed phrase or take control of your wallet**. Instead, we guide you step-by-step on how to install and use the tools, and how to set up your own recovery rig in the safety of your own home, without trusting third parties.
 
+
 We develop specialized software and hardware for mass seed searching.
+
+
+<img width="2293" height="1174" alt="image" src="https://github.com/user-attachments/assets/54d93419-262d-4144-bf64-3adb7d7f03e8" />
+<img width="2377" height="926" alt="image" src="https://github.com/user-attachments/assets/54c76407-56fc-42f8-a24f-d627f78fa438" />
+
+We guarantee the best performance in highly parallelizable and scalable software and hardware for your and your company's self-recovery. Request a quote by emailing us below.
 
 _In very specific cases, its possible we can recover up to 6 words missing the 12 seeds, if cost are not restrictive_
 
 **Contact:** bsbruno@proton.me
 
 On this GitHub, you’ll find some of the most optimized codebases for seed searches, including highly parallelizable software implementations and open-source hardware/ASIC designs used across the recovery industry.
+
+
+
+<img width="2318" height="1036" alt="image" src="https://github.com/user-attachments/assets/a3a5c085-954d-424f-ac02-0050a8862437" />
 
 Thank you at all
 
