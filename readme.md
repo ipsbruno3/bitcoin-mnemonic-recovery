@@ -9,6 +9,12 @@
 - GitHub: ipsbruno | ipsbrunoreserva | ipsbruno3
 - Pastebin: ipsBruno | Drakins
 
+## This repo contains the world's fastest BIP39 seed recovery.
+
+11 million per second, if you consider checksum 176 million per second;
+<img width="629" height="732" alt="image" src="https://github.com/user-attachments/assets/7d121b71-896c-4245-916d-3305417f851d" />
+
+
 # 🥇 Bitcoin Recovery Services
 
 We provide assisted wallet seed and password recovery for users who have lost access to their funds, for a **fixed fee of $1,000**.
