@@ -16,7 +16,7 @@ def pick_slot():
         try:
             r=requests.get(f"{BASE}/api/slot",params={"total":TOTAL_SLOTS,"prefer_active":"1"},timeout=10); r.raise_for_status()
             j=r.json()
-        except e:   
+        except Exception as e:  
             utils.log("error",e)
         
     return j
@@ -28,7 +28,7 @@ def upsert_slot(job_id,**fields):
         try:
             r=requests.post(f"{BASE}/api/slot/upsert",json={"job_id":int(job_id),**fields},headers=HEAD,timeout=10); r.raise_for_status()
             j=r.json()
-        except e:
+        except Exception as e:
             utils.log("error", e)
         
     return j
