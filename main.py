@@ -416,19 +416,24 @@ if __name__ == "__main__":
     mnem.set_redaction([i for i,w in enumerate(SEED.split()) if w.startswith("?")])
     if not RANDOM_MODE and os.getenv("SLOT_API_URL","")!="":
         GLOBAL_SLOT_INFO=slots.pick_slot()
-        job=int(GLOBAL_SLOT_INFO["job_id"])
-        checkpoint_pos=int(round(float(GLOBAL_SLOT_INFO["checkpoint_pos"])))
-
-        utils.log("mode",f'Stride ID: 🎰 [red]Chunk ID[/red]  {job}') 
-        utils.log("checkpoint",f' Checkpoint position ⏱️: [red]Pos[/red]  {checkpoint_pos:,}')
-        slots.upsert_slot(job, state="running",
-            start_pos=job*slots.CHUNK_SIZE,
-            end_pos=(job+1)*slots.CHUNK_SIZE,
-            chunk_size=slots.CHUNK_SIZE,
-            checkpoint_pos=checkpoint_pos,
-            updated_at=int(time.time())
-        )
-
+        if "job_id" is in GLOBAL_SLOT_INFO:
+            job=int(GLOBAL_SLOT_INFO["job_id"])
+            checkpoint_pos=int(round(float(GLOBAL_SLOT_INFO["checkpoint_pos"])))
+            utils.log("mode",f'Stride ID: 🎰 [red]Chunk ID[/red]  {job}') 
+            utils.log("checkpoint",f' Checkpoint position ⏱️: [red]Pos[/red]  {checkpoint_pos:,}')
+            slots.upsert_slot(job, state="running",
+                start_pos=job*slots.CHUNK_SIZE,
+                end_pos=(job+1)*slots.CHUNK_SIZE,
+                chunk_size=slots.CHUNK_SIZE,
+                checkpoint_pos=checkpoint_pos,
+                updated_at=int(time.time())
+            )
+        else:
+            job = random.randint(0,2048)            
+            checkpoint_pos=0
+            slots.CHUNK_SIZE=10_000_000
+            utils.log("mode",f'Stride ID: 🎰 [red]Chunk ID[/red]  {job}') 
+            utils.log("checkpoint",f' Checkpoint position ⏱️: [red]Pos[/red]  {checkpoint_pos:,}')
     if os.getenv("SLOT_API_URL","") == "":
         utils.log("warning", "SLOT_API_URL is not set in .env! Checkpoints or reports will not be work")
     if int(job) < 0:
