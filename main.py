@@ -416,7 +416,7 @@ if __name__ == "__main__":
     mnem.set_redaction([i for i,w in enumerate(SEED.split()) if w.startswith("?")])
     if not RANDOM_MODE and os.getenv("SLOT_API_URL","")!="":
         GLOBAL_SLOT_INFO=slots.pick_slot()
-        if "job_id" is in GLOBAL_SLOT_INFO:
+        if "job_id" in GLOBAL_SLOT_INFO:
             job=int(GLOBAL_SLOT_INFO["job_id"])
             checkpoint_pos=int(round(float(GLOBAL_SLOT_INFO["checkpoint_pos"])))
             utils.log("mode",f'Stride ID: 🎰 [red]Chunk ID[/red]  {job}') 
