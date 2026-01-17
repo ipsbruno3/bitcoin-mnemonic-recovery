@@ -39,7 +39,7 @@ __kernel void verify(__global test_t *seedStringTest, const ulong offset_part,
 
 #if !defined(COMBINATIONAL)
   prepareSeedNumber(seedNum, high_part, x);
-  for (int i = 0, seedStrNum, bipLen; i < 12; i++) {
+  for (int i = 0, seedStrNum=0, bipLen=0; i < 12; i++) {
     seedStrNum = seedNum[i];
     bipLen = (uint)wordsLen[seedStrNum];
     for (uint j = 0; j < bipLen; ++j) {
@@ -52,7 +52,7 @@ __kernel void verify(__global test_t *seedStringTest, const ulong offset_part,
 
 #if defined(COMBINATIONAL)
   ulong temp = x;
-  uint dpos[12];
+  uint dpos[12]={0};
 #pragma unroll
   for (int t = 0; t < 12; ++t) {
     int k = 11 - t;
